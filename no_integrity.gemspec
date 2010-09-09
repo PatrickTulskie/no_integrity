@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{no_integrity}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Patrick Tulskie"]
@@ -13,10 +13,12 @@ Gem::Specification.new do |s|
   s.description = %q{NoIntegrity adds a key/value store inside of your model and then creates the necessary getter/setter methods for accessing those keys as though they were direct attributes of the model.}
   s.email = %q{patricktulskie@gmail.com}
   s.files = [
-    "Rakefile",
+    ".gitignore",
+     "Rakefile",
      "VERSION",
      "lib/no_integrity.rb",
      "lib/no_integrity/no_integrity.rb",
+     "no_integrity.gemspec",
      "spec/no_integrity_spec.rb",
      "spec/rcov.opts",
      "spec/spec.opts",

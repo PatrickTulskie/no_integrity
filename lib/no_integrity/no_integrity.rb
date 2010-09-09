@@ -17,9 +17,9 @@ module NoIntegrity
       @no_attributes.uniq!
       @no_attributes.each do |attrib|
         module_eval <<-STR
-          def #{attrib}; #{@attr_store}[:#{attrib}]; end
-          def #{attrib}?; !!#{@attr_store}[:#{attrib}]; end
-          def #{attrib}=(v); #{@attr_store}[:#{attrib}] = v; end
+          def #{attrib}; #{@attr_store}.is_a?(Hash) ? #{@attr_store}[:#{attrib}] : nil; end
+          def #{attrib}?; #{@attr_store}.is_a?(Hash) ? !!#{@attr_store}[:#{attrib}] : false; end
+          def #{attrib}=(v); #{@attr_store}.is_a?(Hash) ? (#{@attr_store}[:#{attrib}] = v) : self.#{@attr_store} = { :#{attrib} => v }; end
         STR
       end
       return @no_attributes

@@ -34,5 +34,16 @@ context "An object with NoIntegrity" do
   it "should not allow mass assignment of attributes if they are not in a hash" do
     lambda { @arbs.update_no_attributes("monkey") }.should raise_exception("Type mismatch: I received a String when I was expecting a Hash.")
   end
+  
+  it "should return nil for every attribute if the store is not a hash" do
+    @arbs.some_random_hash = nil
+    @arbs.hair.should be_nil
+  end
+  
+  it "should set the store to a hash when setting an attribute" do
+    @arbs.some_random_hash = "POTATO"
+    @arbs.eyes = 'red'
+    @arbs.eyes.should == 'red'
+  end
 
 end
