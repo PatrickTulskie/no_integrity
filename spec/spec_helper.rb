@@ -7,7 +7,7 @@ class MrArbitrary
   
   attr_accessor :some_random_hash
   
-  attr_store :some_random_hash
+  no_attr_store :some_random_hash
   no_attributes :hair, :eyes, :height
   
   def initialize(*args)

@@ -10,7 +10,7 @@ context "An object with NoIntegrity" do
   end
   
   it "should know where the attributes are being stored" do
-    @arbs.class.attr_store.should be_an_instance_of Symbol
+    @arbs.class.no_attr_store.should be_an_instance_of Symbol
   end
   
   it "should be able to list the attributes it is familiar with" do
