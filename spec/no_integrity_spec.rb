@@ -14,7 +14,7 @@ context "An object with NoIntegrity" do
   end
   
   it "should be able to list the attributes it is familiar with" do
-    @arbs.no_attributes.should be_an_instance_of Array
+    @arbs.no_attributes.should be_an_instance_of Hash
   end
   
   it "should be able to retrieve attributes from the store" do
@@ -29,6 +29,34 @@ context "An object with NoIntegrity" do
   it "should be able to mass assign attributes" do
     @arbs.update_no_attributes( :hair => 'blonde' )
     @arbs.hair.should == 'blonde'
+  end
+  
+  it "should coerce boolean types" do
+    @arbs.friendly = 1
+    @arbs.should be_friendly
+    @arbs.friendly.should == true
+  end
+  
+  it "should coerce interger types" do
+    @arbs.age = "25"
+    @arbs.age.should == 25
+  end
+  
+  it "should allow arbitrary types" do
+    @arbs.misc = ['junk']
+    @arbs.misc.should == ['junk']
+  end
+  
+  it "should allow for arrays of arbitary types" do
+    @arbs.no_attributes.keys.should include(:cheese)
+    @arbs.no_attributes.keys.should include(:ham)
+    @arbs.no_attributes.keys.should include(:balogne)
+  end
+  
+  it "should allow for hashes of types" do
+    @arbs.no_attributes.keys.should include(:height)
+    @arbs.no_attributes.keys.should include(:eyes)
+    @arbs.no_attributes.keys.should include(:friendly)
   end
   
   it "should not allow mass assignment of attributes if they are not in a hash" do
