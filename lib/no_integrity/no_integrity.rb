@@ -71,9 +71,10 @@ module NoIntegrity
   
   def update_no_attributes(new_attributes)
     raise "Type mismatch: I received a #{new_attributes.class} when I was expecting a Hash." unless new_attributes.is_a?(Hash)
-    new_attributes.reject! { |key, value| !no_attributes.include?(key) }
-    self.send("#{self.class.no_attr_store}").merge!(new_attributes)
-    return new_attributes
+    new_attributes.each do |key, value|
+      self.send("#{key}=", value)
+    end
+    return self.send(self.class.no_attr_store)
   end
   
   private

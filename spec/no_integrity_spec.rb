@@ -59,6 +59,11 @@ context "An object with NoIntegrity" do
     @arbs.no_attributes.keys.should include(:friendly)
   end
   
+  it "should coerce types on mass assignment" do
+    @arbs.update_no_attributes(:age => "22")
+    @arbs.age.should == 22
+  end
+  
   it "should not allow mass assignment of attributes if they are not in a hash" do
     lambda { @arbs.update_no_attributes("monkey") }.should raise_exception("Type mismatch: I received a String when I was expecting a Hash.")
   end
