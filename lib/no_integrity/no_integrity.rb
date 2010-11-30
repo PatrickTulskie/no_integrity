@@ -11,22 +11,8 @@ module NoIntegrity
       @no_attr_store ||= storage_attribute
     end
     
-    # def no_attributes(*attrs)
-    #   @no_attributes ||= []
-    #   @no_attributes += attrs
-    #   @no_attributes.uniq!
-    #   @no_attributes.each do |attrib|
-    #     module_eval <<-STR
-    #       def #{attrib}; #{@no_attr_store}.is_a?(Hash) ? #{@no_attr_store}[:#{attrib}] : nil; end
-    #       def #{attrib}?; #{@no_attr_store}.is_a?(Hash) ? !!#{@no_attr_store}[:#{attrib}] : false; end
-    #       def #{attrib}=(v); #{@no_attr_store}.is_a?(Hash) ? (#{@no_attr_store}[:#{attrib}] = v) : self.#{@no_attr_store} = { :#{attrib} => v }; end
-    #     STR
-    #   end
-    #   return @no_attributes
-    # end
-    
     def no_attributes
-      @no_attributes
+      @no_attributes || { }
     end
     
     def no_attribute(options)

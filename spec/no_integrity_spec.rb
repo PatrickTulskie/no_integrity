@@ -78,5 +78,9 @@ context "An object with NoIntegrity" do
     @arbs.eyes = 'red'
     @arbs.eyes.should == 'red'
   end
+  
+  it "should return an empty hash if there are no defined attributes" do
+    @arbs.no_attributes.should be_an_instance_of(Hash)
+  end
 
 end
