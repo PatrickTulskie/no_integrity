@@ -64,6 +64,20 @@ context "An object with NoIntegrity" do
     @arbs.age.should == 22
   end
   
+  it "should coerce booleans from numbers" do
+    @arbs.friendly = "0"
+    @arbs.should_not be_friendly
+    @arbs.friendly = "1"
+    @arbs.should be_friendly
+  end
+  
+  it "should coerce booleans from strings" do
+    @arbs.friendly = "false"
+    @arbs.should_not be_friendly
+    @arbs.friendly = "true"
+    @arbs.should be_friendly
+  end
+  
   it "should not allow mass assignment of attributes if they are not in a hash" do
     lambda { @arbs.update_no_attributes("monkey") }.should raise_exception("Type mismatch: I received a String when I was expecting a Hash.")
   end

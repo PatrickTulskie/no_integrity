@@ -68,7 +68,12 @@ module NoIntegrity
   def coerce_no_attribute_type(value, type)
     return value if (type == nil) || (type == '')
     value = case type
-    when 'Boolean'; !!value
+    when 'Boolean';
+      case value.to_s
+      when "true", "1"; true
+      when "false", "0"; false
+      else; !!value
+      end
     when 'Integer'; value.to_i
     when 'String';  value.to_s
     else
