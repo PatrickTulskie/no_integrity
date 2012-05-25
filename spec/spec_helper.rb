@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'spec'
+require 'rspec'
 require 'lib/no_integrity'
 
 class MrArbitrary
