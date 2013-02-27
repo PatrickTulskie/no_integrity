@@ -8,7 +8,12 @@ module NoIntegrity
   
   module ClassMethods
     def no_attr_store(storage_attribute = nil)
-      @no_attr_store ||= storage_attribute
+      if storage_attribute && @no_attr_store.nil?
+        alias_no_attr_store(storage_attribute)
+        @no_attr_store = storage_attribute
+      end
+      
+      return @no_attr_store
     end
     
     def no_attributes
@@ -36,16 +41,17 @@ module NoIntegrity
     
     def setup_no_attribute_functions(attrib, coercion_type = nil)
       module_eval <<-STR
-        def #{attrib}; #{@no_attr_store}.is_a?(Hash) ? #{@no_attr_store}[:#{attrib}] : nil; end
-        def #{attrib}?; #{@no_attr_store}.is_a?(Hash) ? !!#{@no_attr_store}[:#{attrib}] : false; end
-        def #{attrib}=(v)
-          v = coerce_no_attribute_type(v, '#{coercion_type}')
-          if #{@no_attr_store}.is_a?(Hash)
-            (#{@no_attr_store}[:#{attrib}] = v)
-          else
-            self.#{@no_attr_store} = { :#{attrib} => v }
-          end
-        end
+        def #{attrib}; get_no_attribute('#{attrib}'); end
+        def #{attrib}?; !!get_no_attribute('#{attrib}'); end
+        def #{attrib}=(v); set_no_attribute('#{attrib}', coerce_no_attribute_type(v, '#{coercion_type}')); end
+      STR
+    end
+    
+    def alias_no_attr_store(old_name)
+      module_eval <<-STR, __FILE__, __LINE__ + 1
+        def __no_attr_store; self.#{old_name}; end
+        def __no_attr_store?; self.#{old_name}?; end
+        def __no_attr_store=(v); self.#{old_name} = v; end
       STR
     end
     
@@ -64,6 +70,28 @@ module NoIntegrity
   end
   
   private
+  
+  def get_no_attribute(attribute_name)
+    return nil unless self.__no_attr_store.is_a?(Hash)
+    self.__no_attr_store = normalize_keys(__no_attr_store)
+    self.__no_attr_store[attribute_name.to_s]
+  end
+    
+  def set_no_attribute(attribute_name, value)
+    self.__no_attr_store = normalize_keys(__no_attr_store)
+    if self.__no_attr_store.is_a?(Hash)
+      self.__no_attr_store[attribute_name.to_s] = value
+    else
+      self.__no_attr_store = { attribute_name.to_s => value }
+    end
+  end
+  
+  def normalize_keys(store)
+    return store if @__performed_key_normalization || !store.is_a?(Hash)
+    store.keys.each { |key| store[key.to_s] = store.delete(key) }
+    @__performed_key_normalization = true
+    return store
+  end
   
   def coerce_no_attribute_type(value, type)
     return value if (type == nil) || (type == '')
