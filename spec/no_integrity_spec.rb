@@ -1,6 +1,15 @@
 require 'spec_helper'
 
 describe NoIntegrity do
+
+  context "class methods" do
+
+    it "stores mappings of the various types of attributes" do
+      MrArbitrary.no_attribute_mappings['hair'].should == 'String'
+      MrArbitrary.no_attribute_mappings['friendly'].should == 'Boolean'
+    end
+
+  end
   
   context "An object with NoIntegrity" do
 

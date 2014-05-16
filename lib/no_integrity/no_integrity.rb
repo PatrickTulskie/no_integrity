@@ -25,21 +25,31 @@ module NoIntegrity
       if options.is_a?(Hash)
         options.keys.each do |attrib|
           @no_attributes[attrib] = options[attrib]
-          setup_no_attribute_functions(attrib, options[attrib])
+          setup_no_attribute_accessors(attrib, options[attrib])
+          update_no_attribute_mappings(attrib, options[attrib])
         end
       elsif options.is_a?(Array)
         options.each do |attrib|
           @no_attributes[attrib] = nil
-          setup_no_attribute_functions(attrib, nil)
+          setup_no_attribute_accessors(attrib, nil)
         end
       elsif options.is_a?(Symbol)
-        setup_no_attribute_functions(options)
+        setup_no_attribute_accessors(options)
       end
+    end
+    
+    def no_attribute_mappings
+      @no_attribute_mappings
     end
     
     private
     
-    def setup_no_attribute_functions(attrib, coercion_type = nil)
+    def update_no_attribute_mappings(attrib, type)
+      @no_attribute_mappings ||= { }
+      @no_attribute_mappings[attrib.to_s] = type
+    end
+    
+    def setup_no_attribute_accessors(attrib, coercion_type = nil)
       module_eval <<-STR
         def #{attrib}; get_no_attribute('#{attrib}'); end
         def #{attrib}?; !!get_no_attribute('#{attrib}'); end
