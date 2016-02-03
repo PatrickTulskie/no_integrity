@@ -9,34 +9,51 @@ Simple hash serialization with loose type coercion.  Built for ActiveRecord mode
 For starters, throw this in your Gemfile:
 
     gem "no_integrity"
-    
+
 Then, add this to your class:
 
     class MrArbitrary < ActiveRecord::Base
       include NoIntegrity
-  
+
       attr_accessor :some_random_hash
-  
-      no_attr_store :some_random_hash
+
       no_attribute :misc
-      no_attribute :hair => 'String'
-      no_attribute :age => 'Integer'
-      no_attribute :height => 'String', :eyes => 'String', :friendly => 'Boolean'
-      no_attribute [:cheese, :ham, :balogne]
+      no_attribute :hair, type: 'String'
+      no_attribute :age, type: 'Integer'
+      no_attribute :height, type: 'String'
+      no_attribute :eyes, type: 'String'
+      no_attribute :friendly, type: 'Boolean', default: true
+      no_attribute :cheese
+      no_attribute :ham
+      no_attribute :balogne
     end
-    
+
 Finally, you can make calls like this:
 
     arbs = MrArbitrary.new
     arbs.friendly? # => false
     arbs.friendly = true
     arbs.friendly? # => true
-    
+
 You can define as many attributes as you want, and you can specify any of the following coercion types:
 
 1. `String`
 2. `Integer`
 3. `Boolean`
+
+## Upgrading From 0.4.0
+
+For `0.5.0` I added the ability to store default values for each of the attributes.  This required some changes to the way that attributes were setup and stored for each object.
+
+In your classes you'll need to convert from:
+
+    no_attribute hair: 'String'
+
+To:
+
+    no_attribute :hair, type: 'String'
+
+Also if you relied on any of the undocumented method calls, you'll need to update them so they can handle the new internal structure.
 
 ## Why?
 
