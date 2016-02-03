@@ -5,8 +5,8 @@ describe NoIntegrity do
   context "class methods" do
 
     it "stores mappings of the various types of attributes" do
-      expect(MrArbitrary.no_attribute_mappings['hair']).to eq('String')
-      expect(MrArbitrary.no_attribute_mappings['friendly']).to eq('Boolean')
+      expect(MrArbitrary.no_attribute_mappings[:hair][:type]).to eq('String')
+      expect(MrArbitrary.no_attribute_mappings[:friendly][:type]).to eq('Boolean')
     end
 
   end
@@ -110,6 +110,10 @@ describe NoIntegrity do
 
     it "should return an empty hash if there are no defined attributes" do
       expect(@arbs.no_attributes).to be_an_instance_of(Hash)
+    end
+
+    it "returns the default value" do
+      expect(@arbs.friendly).to eq true
     end
 
   end

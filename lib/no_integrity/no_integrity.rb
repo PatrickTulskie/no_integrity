@@ -1,54 +1,48 @@
 module NoIntegrity
-  
+
   def self.included(a_module)
     a_module.module_eval do
       extend ClassMethods
     end
   end
-  
+
   module ClassMethods
     def no_attr_store(storage_attribute = nil)
       if storage_attribute && @no_attr_store.nil?
         alias_no_attr_store(storage_attribute)
         @no_attr_store = storage_attribute
       end
-      
+
       return @no_attr_store
     end
-    
+
     def no_attributes
       @no_attributes || { }
     end
-    
-    def no_attribute(options)
+
+    def no_attribute(attribs, options = { })
       @no_attributes ||= { }
-      if options.is_a?(Hash)
-        options.keys.each do |attrib|
-          @no_attributes[attrib] = options[attrib]
-          setup_no_attribute_accessors(attrib, options[attrib])
-          update_no_attribute_mappings(attrib, options[attrib])
-        end
-      elsif options.is_a?(Array)
-        options.each do |attrib|
-          @no_attributes[attrib] = nil
-          setup_no_attribute_accessors(attrib, nil)
-        end
-      elsif options.is_a?(Symbol)
-        setup_no_attribute_accessors(options)
+
+      attribs = [attribs] unless attribs.is_a?(Array)
+
+      attribs.each do |attrib|
+        @no_attributes[attrib.to_sym] = options
+        setup_no_attribute_accessors(attrib, options[:type])
+        update_no_attribute_mappings(attrib, options)
       end
     end
-    
+
     def no_attribute_mappings
       @no_attribute_mappings
     end
-    
+
     private
-    
-    def update_no_attribute_mappings(attrib, type)
+
+    def update_no_attribute_mappings(attrib, options)
       @no_attribute_mappings ||= { }
-      @no_attribute_mappings[attrib.to_s] = type
+      @no_attribute_mappings[attrib.to_sym] = options
     end
-    
+
     def setup_no_attribute_accessors(attrib, coercion_type = nil)
       module_eval <<-STR
         def #{attrib}; get_no_attribute('#{attrib}'); end
@@ -56,7 +50,7 @@ module NoIntegrity
         def #{attrib}=(v); set_no_attribute('#{attrib}', coerce_no_attribute_type(v, '#{coercion_type}')); end
       STR
     end
-    
+
     def alias_no_attr_store(old_name)
       module_eval <<-STR, __FILE__, __LINE__ + 1
         def __no_attr_store; self.#{old_name}; end
@@ -64,13 +58,17 @@ module NoIntegrity
         def __no_attr_store=(v); self.#{old_name} = v; end
       STR
     end
-    
+
   end
-  
+
   def no_attributes
     self.class.no_attributes
   end
-  
+
+  def no_attribute_mappings
+    self.class.no_attribute_mappings
+  end
+
   def update_no_attributes(new_attributes)
     raise "Type mismatch: I received a #{new_attributes.class} when I was expecting a Hash." unless new_attributes.is_a?(Hash)
     new_attributes.each do |key, value|
@@ -78,31 +76,33 @@ module NoIntegrity
     end
     return self.send(self.class.no_attr_store)
   end
-  
+
   private
-  
+
   def get_no_attribute(attribute_name)
     return nil unless self.__no_attr_store.is_a?(Hash)
     self.__no_attr_store = normalize_keys(__no_attr_store)
-    self.__no_attr_store[attribute_name.to_s]
+    no_val = self.__no_attr_store[attribute_name.to_sym]
+
+    no_val.nil? ? no_attribute_mappings[attribute_name.to_sym][:default] : no_val
   end
-    
+
   def set_no_attribute(attribute_name, value)
     self.__no_attr_store = normalize_keys(__no_attr_store)
     if self.__no_attr_store.is_a?(Hash)
-      self.__no_attr_store[attribute_name.to_s] = value
+      self.__no_attr_store[attribute_name.to_sym] = value
     else
-      self.__no_attr_store = { attribute_name.to_s => value }
+      self.__no_attr_store = { attribute_name.to_sym => value }
     end
   end
-  
+
   def normalize_keys(store)
     return store if @__performed_key_normalization || !store.is_a?(Hash)
-    store.keys.each { |key| store[key.to_s] = store.delete(key) }
+    store.keys.each { |key| store[key.to_sym] = store.delete(key) }
     @__performed_key_normalization = true
     return store
   end
-  
+
   def coerce_no_attribute_type(value, type)
     return value if (type == nil) || (type == '')
     value = case type
@@ -117,8 +117,8 @@ module NoIntegrity
     else
       raise "Unsure of what to do with #{type}!!"
     end
-    
+
     return value
   end
-  
+
 end
