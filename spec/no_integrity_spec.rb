@@ -5,12 +5,12 @@ describe NoIntegrity do
   context "class methods" do
 
     it "stores mappings of the various types of attributes" do
-      MrArbitrary.no_attribute_mappings['hair'].should == 'String'
-      MrArbitrary.no_attribute_mappings['friendly'].should == 'Boolean'
+      expect(MrArbitrary.no_attribute_mappings['hair']).to eq('String')
+      expect(MrArbitrary.no_attribute_mappings['friendly']).to eq('Boolean')
     end
 
   end
-  
+
   context "An object with NoIntegrity" do
 
     before(:each) do
@@ -21,97 +21,97 @@ describe NoIntegrity do
     end
 
     it "should know where the attributes are being stored" do
-      @arbs.class.no_attr_store.should be_an_instance_of Symbol
+      expect(@arbs.class.no_attr_store).to be_an_instance_of Symbol
     end
-    
+
     it "should be able to get all of the attributes" do
-      @arbs.__no_attr_store.should be_an_instance_of Hash
+      expect(@arbs.__no_attr_store).to be_an_instance_of Hash
     end
-    
+
     it "should be able to list the attributes it is familiar with" do
-      @arbs.no_attributes.should be_an_instance_of Hash
+      expect(@arbs.no_attributes).to be_an_instance_of Hash
     end
 
     it "should be able to retrieve attributes from the store" do
-      @arbs.hair.should == 'brown'
+      expect(@arbs.hair).to eq('brown')
     end
 
     it "should be able to have an attribute assigned" do
       @arbs.hair = "black"
-      @arbs.hair.should == 'black'
+      expect(@arbs.hair).to eq('black')
     end
-    
+
     it "should be able to mass assign attributes" do
       @arbs.update_no_attributes( :hair => 'blonde' )
-      @arbs.hair.should == 'blonde'
+      expect(@arbs.hair).to eq('blonde')
     end
-    
+
     it "should coerce boolean types" do
       @arbs.friendly = 1
-      @arbs.should be_friendly
-      @arbs.friendly.should == true
+      expect(@arbs).to be_friendly
+      expect(@arbs.friendly).to eq(true)
     end
-    
+
     it "should coerce interger types" do
       @arbs.age = "25"
-      @arbs.age.should == 25
+      expect(@arbs.age).to eq(25)
     end
-    
+
     it "should allow arbitrary types" do
       @arbs.misc = ['junk']
-      @arbs.misc.should == ['junk']
+      expect(@arbs.misc).to eq(['junk'])
     end
-    
+
     it "should allow for arrays of arbitary types" do
-      @arbs.no_attributes.keys.should include(:cheese)
-      @arbs.no_attributes.keys.should include(:ham)
-      @arbs.no_attributes.keys.should include(:balogne)
+      expect(@arbs.no_attributes.keys).to include(:cheese)
+      expect(@arbs.no_attributes.keys).to include(:ham)
+      expect(@arbs.no_attributes.keys).to include(:balogne)
     end
-    
+
     it "should allow for hashes of types" do
-      @arbs.no_attributes.keys.should include(:height)
-      @arbs.no_attributes.keys.should include(:eyes)
-      @arbs.no_attributes.keys.should include(:friendly)
+      expect(@arbs.no_attributes.keys).to include(:height)
+      expect(@arbs.no_attributes.keys).to include(:eyes)
+      expect(@arbs.no_attributes.keys).to include(:friendly)
     end
-    
+
     it "should coerce types on mass assignment" do
       @arbs.update_no_attributes(:age => "22")
-      @arbs.age.should == 22
+      expect(@arbs.age).to eq(22)
     end
-    
+
     it "should coerce booleans from numbers" do
       @arbs.friendly = "0"
-      @arbs.should_not be_friendly
+      expect(@arbs).not_to be_friendly
       @arbs.friendly = "1"
-      @arbs.should be_friendly
+      expect(@arbs).to be_friendly
     end
-    
+
     it "should coerce booleans from strings" do
       @arbs.friendly = "false"
-      @arbs.should_not be_friendly
+      expect(@arbs).not_to be_friendly
       @arbs.friendly = "true"
-      @arbs.should be_friendly
+      expect(@arbs).to be_friendly
     end
-    
+
     it "should not allow mass assignment of attributes if they are not in a hash" do
-      lambda { @arbs.update_no_attributes("monkey") }.should raise_exception("Type mismatch: I received a String when I was expecting a Hash.")
+      expect { @arbs.update_no_attributes("monkey") }.to raise_exception("Type mismatch: I received a String when I was expecting a Hash.")
     end
-    
+
     it "should return nil for every attribute if the store is not a hash" do
       @arbs.some_random_hash = nil
-      @arbs.hair.should be_nil
+      expect(@arbs.hair).to be_nil
     end
-    
+
     it "should set the store to a hash when setting an attribute" do
       @arbs.some_random_hash = "POTATO"
       @arbs.eyes = 'red'
-      @arbs.eyes.should == 'red'
+      expect(@arbs.eyes).to eq('red')
     end
-    
+
     it "should return an empty hash if there are no defined attributes" do
-      @arbs.no_attributes.should be_an_instance_of(Hash)
+      expect(@arbs.no_attributes).to be_an_instance_of(Hash)
     end
 
   end
-  
+
 end
