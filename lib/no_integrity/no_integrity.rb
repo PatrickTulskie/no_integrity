@@ -53,8 +53,8 @@ module NoIntegrity
 
     def alias_no_attr_store(old_name)
       module_eval <<-STR, __FILE__, __LINE__ + 1
-        alias __no_attr_store :#{old_name}
-        alias __no_attr_store= :#{old_name}=
+        def __no_attr_store; self.#{old_name}; end
+        def __no_attr_store=(v); self.#{old_name} = v; end
       STR
     end
 
