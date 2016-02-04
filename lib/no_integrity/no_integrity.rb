@@ -53,9 +53,8 @@ module NoIntegrity
 
     def alias_no_attr_store(old_name)
       module_eval <<-STR, __FILE__, __LINE__ + 1
-        def __no_attr_store; self.#{old_name}; end
-        def __no_attr_store?; self.#{old_name}?; end
-        def __no_attr_store=(v); self.#{old_name} = v; end
+        alias __no_attr_store :#{old_name}
+        alias __no_attr_store= :#{old_name}=
       STR
     end
 
@@ -80,27 +79,24 @@ module NoIntegrity
   private
 
   def get_no_attribute(attribute_name)
-    return nil unless self.__no_attr_store.is_a?(Hash)
-    self.__no_attr_store = normalize_keys(__no_attr_store)
+    initialize_no_attribute_store!
     no_val = self.__no_attr_store[attribute_name.to_sym]
 
     no_val.nil? ? no_attribute_mappings[attribute_name.to_sym][:default] : no_val
   end
 
   def set_no_attribute(attribute_name, value)
-    self.__no_attr_store = normalize_keys(__no_attr_store)
-    if self.__no_attr_store.is_a?(Hash)
-      self.__no_attr_store[attribute_name.to_sym] = value
-    else
-      self.__no_attr_store = { attribute_name.to_sym => value }
-    end
+    initialize_no_attribute_store!
+    self.__no_attr_store[attribute_name.to_sym] = value
   end
 
-  def normalize_keys(store)
-    return store if @__performed_key_normalization || !store.is_a?(Hash)
-    store.keys.each { |key| store[key.to_sym] = store.delete(key) }
-    @__performed_key_normalization = true
-    return store
+  def initialize_no_attribute_store!
+    return true if @__initialized_attribute_store
+    # Initialize an empty hash if we are something else...
+    self.__no_attr_store = { } unless self.__no_attr_store.is_a?(Hash)
+    # Symbolize all of the keys
+    self.__no_attr_store = Hash[self.__no_attr_store.map { |k, v| [k.to_sym, v] }]
+    @__initialized_attribute_store = true
   end
 
   def coerce_no_attribute_type(value, type)

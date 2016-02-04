@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rspec'
+require 'byebug'
 require './lib/no_integrity'
 
 class MrArbitrary
@@ -15,12 +16,12 @@ class MrArbitrary
   no_attribute :height, type: 'String'
   no_attribute :eyes, type: 'String'
   no_attribute :friendly, type: 'Boolean', default: true
-  no_attribute :cheese
+  no_attribute :cheese, default: "Cheddar"
   no_attribute :ham
   no_attribute :balogne
 
-  def initialize(*args)
-    @some_random_hash ||= { hair: 'brown' }
+  def initialize(attributes = nil)
+    @some_random_hash = attributes
   end
 
 end
