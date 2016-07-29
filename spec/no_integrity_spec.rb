@@ -27,6 +27,16 @@ describe NoIntegrity do
       end
     end
 
+    context "initialized from a stringified hash" do
+
+      let(:arbs) { MrArbitrary.new({ 'hair' => 'brown' }) }
+
+      it "gets the correct value" do
+        expect(arbs.hair).to eq('brown')
+      end
+
+    end
+
     it "should know where the attributes are being stored" do
       expect(arbs.class.no_attr_store).to be_an_instance_of Symbol
     end
