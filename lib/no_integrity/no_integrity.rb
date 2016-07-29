@@ -80,6 +80,7 @@ module NoIntegrity
 
   def get_no_attribute(attribute_name)
     initialize_no_attribute_store!
+
     no_val = self.__no_attr_store[attribute_name.to_sym]
 
     no_val.nil? ? no_attribute_mappings[attribute_name.to_sym][:default] : no_val
@@ -91,11 +92,13 @@ module NoIntegrity
   end
 
   def initialize_no_attribute_store!
-    return true if @__initialized_attribute_store
+    return true if @__initialized_attribute_store && !dirty_keys?
     # Initialize an empty hash if we are something else...
     self.__no_attr_store = { } unless self.__no_attr_store.is_a?(Hash)
     # Symbolize all of the keys
-    self.__no_attr_store = Hash[self.__no_attr_store.map { |k, v| [k.to_sym, v] }]
+    self.__no_attr_store.keys.each do |key|
+      self.__no_attr_store[key.to_sym] = self.__no_attr_store.delete(key) unless key.is_a?(Symbol)
+    end
     @__initialized_attribute_store = true
   end
 
@@ -115,6 +118,10 @@ module NoIntegrity
     end
 
     return value
+  end
+
+  def dirty_keys?
+    self.__no_attr_store.is_a?(Hash) && self.__no_attr_store.keys.any? { |k| !k.is_a?(Symbol) }
   end
 
 end
